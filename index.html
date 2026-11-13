@@ -125,10 +125,10 @@ h2.gl.in .glb::before{transform:scaleY(1);transition-delay:.4s}
 .glb i{display:inline-block;width:.32em}
 .glb .arr{position:absolute;right:18px;bottom:14px;font-family:var(--mono);font-size:clamp(24px,3vw,44px);line-height:1;color:var(--accent);transition:transform .25s,color .25s}
 section:nth-of-type(even) .glb .arr{color:#2ee6e6}
-.glb:hover{background:var(--accent);transform:translateX(10px)}
-.glb:hover::before{background:#000}
-.glb:hover .w{background:none;color:#0b0b0c;-webkit-text-fill-color:#0b0b0c;text-shadow:-4px 0 0 #2ee6e6,4px 0 0 #fff;animation:jolt .35s steps(3) 1}
-section.block .glb:hover .arr{color:#000;transform:translate(5px,5px)}
+.glb:hover,.glb.hot{background:var(--accent);transform:translateX(10px)}
+.glb:hover::before,.glb.hot::before{background:#000}
+.glb:hover .w,.glb.hot .w{background:none;color:#0b0b0c;-webkit-text-fill-color:#0b0b0c;text-shadow:-4px 0 0 #2ee6e6,4px 0 0 #fff;animation:jolt .35s steps(3) 1}
+section.block .glb:hover .arr,section.block .glb.hot .arr{color:#000;transform:translate(5px,5px)}
 
 /* live */
 .shows{border-top:1px solid var(--line)}
@@ -805,6 +805,16 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
     });
     box.addEventListener('mouseleave',function(){clearInterval(t);ws.forEach(function(w){w.innerHTML=w._g});});
   });
+
+  /* ---- mobile: heading "hover" effect fires on scroll ---- */
+  if(window.matchMedia('(hover:none), (max-width:900px)').matches && 'IntersectionObserver' in window){
+    var hio=new IntersectionObserver(function(es){es.forEach(function(e){
+      var g=e.target;
+      if(e.isIntersecting){ if(!g.classList.contains('hot')){g.classList.add('hot');g.dispatchEvent(new Event('mouseenter'));} }
+      else if(g.classList.contains('hot')){ g.classList.remove('hot');g.dispatchEvent(new Event('mouseleave')); }
+    })},{rootMargin:'-30% 0px -45% 0px'});
+    [].slice.call(document.querySelectorAll('.glb')).forEach(function(g){hio.observe(g)});
+  }
 
   /* ---- active nav link ---- */
   var links=[].slice.call(document.querySelectorAll('.nav ul a[href^="#"]')).filter(function(a){return a.getAttribute('href').length>1});
