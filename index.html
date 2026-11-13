@@ -335,6 +335,32 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
   .bg-arena:focus .bg-focus,.beergame.won .bg-focus{display:none}
 }
 
+
+/* jam: click a member */
+.jam-hint{font-size:14px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+.jam-hint b{font-weight:400;color:var(--accent)}
+.member{cursor:pointer;outline:none}
+.member:focus-visible .member__ph{box-shadow:0 0 0 2px var(--accent)}
+.member__ph{position:relative}
+.member.jam .member__ph img{filter:grayscale(0) contrast(1.1);transform:scale(1)}
+.member.jam .member__ph{animation:jamshake .25s steps(2) 2}
+@keyframes jamshake{50%{transform:translate(2px,-2px)}}
+.pxnote{position:absolute;z-index:3;width:21px;height:30px;image-rendering:pixelated;pointer-events:none;
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.7));animation:noteup 1.1s steps(8) forwards}
+@keyframes noteup{0%{opacity:0;transform:translate(0,10px) scale(.6)}15%{opacity:1;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(var(--dx,0px),-120px) rotate(var(--rot,0deg)) scale(1.2)}}
+
+
+.pxav{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:0;z-index:0}
+.member__ph img{position:relative;z-index:1}
+.member.av .pxav{opacity:1}
+.member.av .member__ph img{opacity:0}
+.member.av .member__ph::after,.member.av .member__ph::before{opacity:.35}
+.shard{position:absolute;z-index:2;background-repeat:no-repeat;pointer-events:none;filter:grayscale(1) contrast(1.2) brightness(.85);
+  transition:transform .9s cubic-bezier(.3,.1,.8,.4),opacity .9s steps(6)}
+.member.av .jam-ct{display:none}
+.member figcaption .tap{grid-column:2;font-size:11px;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;min-height:1em}
+
 /* reveal */
 .rv{opacity:0;transform:translateY(40px);transition:opacity .9s ease,transform .9s ease}
 .rv.in{opacity:1;transform:none}
@@ -555,14 +581,15 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
       <p>Naše hudba se po pár pivech jeví jako poslouchatelná a texty svou vypovídající hodnotou oscilují mezi duchaplnými a debilními.</p>
     </div>
   </div>
+  <div class="jam-hint rv"><b>PM_JAM.EXE</b> — klikni na člena kapely a zahraje ti ♪ · klikni 3× rychle za sebou a uvidíš, co je zač</div>
   <div class="crew">
-    <figure class="member rv"><div class="member__ph"><img src="img/clen-janek.jpg" alt="Janek Moleš"></div>
+    <figure class="member rv" data-inst="janek" data-col="#ff00ff" tabindex="0" role="button" aria-label="Janek Moleš – klikni a zahraje"><div class="member__ph"><canvas class="pxav" data-av="janek" width="15" height="20" aria-hidden="true"></canvas><img src="img/clen-janek.jpg" alt="Janek Moleš"></div>
       <figcaption><span class="mn">01</span><strong>Janek Moleš</strong><span class="mr">Kytara / zpěv</span></figcaption></figure>
-    <figure class="member rv"><div class="member__ph"><img src="img/clen-pavel.jpg" alt="Pavel Svoboda"></div>
+    <figure class="member rv" data-inst="pavel" data-col="#2ee6e6" tabindex="0" role="button" aria-label="Pavel Svoboda – klikni a zahraje"><div class="member__ph"><canvas class="pxav" data-av="pavel" width="15" height="20" aria-hidden="true"></canvas><img src="img/clen-pavel.jpg" alt="Pavel Svoboda"></div>
       <figcaption><span class="mn">02</span><strong>Pavel Svoboda</strong><span class="mr">Kytara</span></figcaption></figure>
-    <figure class="member rv"><div class="member__ph"><img src="img/clen-martin.jpg" alt="Martin Žabka"></div>
+    <figure class="member rv" data-inst="martin" data-col="#ffd23a" tabindex="0" role="button" aria-label="Martin Žabka – klikni a zahraje"><div class="member__ph"><canvas class="pxav" data-av="martin" width="15" height="20" aria-hidden="true"></canvas><img src="img/clen-martin.jpg" alt="Martin Žabka"></div>
       <figcaption><span class="mn">03</span><strong>Martin Žabka</strong><span class="mr">Baskytara</span></figcaption></figure>
-    <figure class="member rv"><div class="member__ph"><img src="img/clen-tomas.jpg" alt="Tomáš Kvasnička"></div>
+    <figure class="member rv" data-inst="tomas" data-col="#7dff3a" tabindex="0" role="button" aria-label="Tomáš Kvasnička – klikni a zahraje"><div class="member__ph"><canvas class="pxav" data-av="tomas" width="15" height="20" aria-hidden="true"></canvas><img src="img/clen-tomas.jpg" alt="Tomáš Kvasnička"></div>
       <figcaption><span class="mn">04</span><strong>Tomáš Kvasnička</strong><span class="mr">Bicí</span></figcaption></figure>
   </div>
 </section>
@@ -794,6 +821,82 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
     plug.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();if(plugged){unplug();home();place();}else plugIn();}});
     window.addEventListener('resize',function(){if(plugged){var s=socket();px=s.x-10*PSC+1;py=s.y-4.5;}else{px=Math.min(px,W()-30);}place();});
     home();place();
+  })();
+
+  /* ---- jam: click a member -> pixel note + short synth sound of their instrument ---- */
+  (function(){
+    var NOTE=["...XX..","...XXX.","...X.XX","...X..X","...X...","...X...",".XXX...","XXXX...","XXXX...",".XX...."];
+    var AC=null, master=null;
+    function ctx(){ if(!AC){var C=window.AudioContext||window.webkitAudioContext; if(!C)return null; AC=new C(); master=AC.createGain(); master.gain.value=.35; master.connect(AC.destination);} if(AC.state==='suspended')AC.resume(); return AC; }
+    function env(g,t,a,peak,d){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d);}
+    function dist(amount){var ws=AC.createWaveShaper(),n=2048,c=new Float32Array(n);for(var i=0;i<n;i++){var x=i*2/n-1;c[i]=(3+amount)*x*20*Math.PI/180/(Math.PI+amount*Math.abs(x));}ws.curve=c;return ws;}
+    function guitar(freqs,t,len){
+      var d=dist(60), lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2600; d.connect(lp);
+      var g=AC.createGain(); lp.connect(g); g.connect(master); env(g,t,.01,.7,len);
+      freqs.forEach(function(f,i){[0,7].forEach(function(det){var o=AC.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=det;
+        var og=AC.createGain();og.gain.value=.25;o.connect(og);og.connect(d);o.start(t+i*.012);o.stop(t+len+.1);});});
+    }
+    function noise(t,dur,hp,peak){var b=AC.createBuffer(1,Math.ceil(AC.sampleRate*dur),AC.sampleRate),dd=b.getChannelData(0);for(var i=0;i<dd.length;i++)dd[i]=Math.random()*2-1;
+      var s=AC.createBufferSource();s.buffer=b;var f=AC.createBiquadFilter();f.type='highpass';f.frequency.value=hp;var g=AC.createGain();s.connect(f);f.connect(g);g.connect(master);env(g,t,.002,peak,dur);s.start(t);s.stop(t+dur+.02);}
+    function kick(t){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.14);o.connect(g);g.connect(master);env(g,t,.003,1.2,.32);o.start(t);o.stop(t+.4);}
+    function snare(t){noise(t,.16,1500,.7);var o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=185;o.connect(g);g.connect(master);env(g,t,.002,.5,.09);o.start(t);o.stop(t+.12);}
+    function bass(f,t,len){var lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(900,t);lp.frequency.exponentialRampToValueAtTime(250,t+len);
+      var g=AC.createGain();lp.connect(g);g.connect(master);env(g,t,.005,1,len);
+      [['triangle',f],['sawtooth',f],['sine',f/2]].forEach(function(v){var o=AC.createOscillator();o.type=v[0];o.frequency.value=v[1];var og=AC.createGain();og.gain.value=v[0]==='sawtooth'?.25:.6;o.connect(og);og.connect(lp);o.start(t);o.stop(t+len+.05);});}
+    var SOUNDS={
+      janek:function(t){guitar([82.41,123.47,164.81],t,.9);},                       /* E5 power chord, one big strum */
+      pavel:function(t){guitar([110,164.81,220],t,.18);guitar([110,164.81,220],t+.2,.18);guitar([146.83,220,293.66],t+.4,.6);}, /* A5 A5 D5 */
+      martin:function(t){bass(55,t,.28);bass(55,t+.3,.28);bass(73.42,t+.6,.5);},   /* A, A, D on bass */
+      tomas:function(t){kick(t);noise(t+.12,.05,7000,.3);snare(t+.24);noise(t+.36,.05,7000,.3);kick(t+.48);kick(t+.6);snare(t+.72);} /* little fill */
+    };
+    function noteCanvas(col){var c=document.createElement('canvas');c.width=7;c.height=10;c.className='pxnote';var x=c.getContext('2d');x.fillStyle=col;
+      NOTE.forEach(function(r,y){for(var i=0;i<r.length;i++)if(r[i]==='X')x.fillRect(i,y,1,1);});return c;}
+    function jam(fig){
+      var a=ctx(); if(a){var f=SOUNDS[fig.dataset.inst]; if(f)f(a.currentTime+.02);}
+      var ph=fig.querySelector('.member__ph'), col=fig.dataset.col||'#ff00ff';
+      for(var n=0;n<3;n++){(function(n){setTimeout(function(){
+        var c=noteCanvas(col); c.style.left=(20+Math.random()*60)+'%'; c.style.top=(35+Math.random()*25)+'%';
+        c.style.setProperty('--dx',(Math.random()*60-30)+'px'); c.style.setProperty('--rot',(Math.random()*40-20)+'deg');
+        ph.appendChild(c); setTimeout(function(){c.remove()},1200);
+      },n*140);})(n);}
+      fig.classList.remove('jam'); void fig.offsetWidth; fig.classList.add('jam');
+      clearTimeout(fig._jt); fig._jt=setTimeout(function(){fig.classList.remove('jam')},1200);
+    }
+    [].slice.call(document.querySelectorAll('.member[data-inst]')).forEach(function(fig){
+      fig.addEventListener('click',function(){jam(fig)});
+      fig.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();jam(fig);}});
+    });
+    /* triple click: photo shatters into pixels and reveals a pixel avatar */
+    var AV={"janek": ["...............", "....CCCCCCC....", "...CCCCCCCCC...", "...CCCKKCCCCC..", "..sCCCCCCCCCCCC", "..sHHsssssss...", "...sssssssss...", "...sKKsssKKs...", "...sssssssss...", "...ssssbsssss..", "...sssKKKsss...", "...sssKmKsss...", "....sssKsss....", ".....sssss.....", "...TTTTTTTTT...", "..TTTTTTTTTTT..", ".TTPPPPPPPPPTT.", ".TTTTTTTTTTTTT.", ".TTTTTTTTTTTTT.", ".TTTTTTTTTTTTT."], "pavel": ["...............", "....CCCCCCC....", "...CCCCCCCCC...", "..CCCCCCCCCCC..", "CCCCCCCCCCCCs..", "...sssssssss...", "...sssssssss...", "...sKKsssKKs...", "...sssssssss...", "...ssssssssss..", "...bssKKKssb...", "...bbbbbbbbb...", "....bbbbbbb....", ".....bbbbb.....", "...TTTTTTTTT...", "..TTTPTTTPTTT..", ".TTTPTPTPTPTTT.", ".TTTTTTTTTTTTT.", ".TTTTTTTTTTTTT.", ".TTTTTTTTTTTTT."], "martin": ["...............", "....CCCCCCC....", "...CCCCCCCCC...", "...CCCrrCCCCC..", "..sCCCCCCCCCCCC", "..sHHsssssss...", "...sssssssss...", "...sKKsssKKs...", "...sssssssss...", "...ssssbsssss..", "...ssssssssss..", "...sssKKKsss...", "....sbbbbbs....", ".....bbbbb.....", "...TTTTTTTTT...", "..TTTTTTTTTTT..", ".TTTTwwwwwTTTT.", ".TTTTTTTTTTTTT.", ".TTTTTTTTTTTTT.", ".TTTTTTTTTTTTT."], "tomas": ["...............", ".....sssss.....", "....sssssss....", "...sssssssss...", "...sssssssss...", "..ssssssssssss.", "..Ksssssssssss.", "..KGGGGsGGGGs..", "..KGGGGsGGGG...", "...sssssssss...", "...bsssssssb...", "...bbKKKKKbb...", "....bbbbbbb....", ".....bbbbb.....", "...sssssssss...", "..sssssssssss..", ".sssssssssssss.", ".sssssssssssss.", ".ssssssKssssss.", ".sssssssssssss."]}, AVP={"janek": {"C": "#d8d2c4", "K": "#0b0b0c", "s": "#f2c29b", "H": "#c49a5a", "b": "#d9a37a", "m": "#c0392b", "T": "#1a1a1c", "P": "#ff00ff", "r": "#ff00ff", "w": "#ecebe6", "G": "#0b0b0c", "bg": "#3a0b3a"}, "pavel": {"C": "#5a8bd6", "K": "#0b0b0c", "s": "#f2c29b", "H": "#5a3a1a", "b": "#6b4423", "m": "#c0392b", "T": "#1a1a1c", "P": "#ecebe6", "r": "#ff00ff", "w": "#ecebe6", "G": "#0b0b0c", "bg": "#0b3a3e"}, "martin": {"C": "#46464c", "K": "#0b0b0c", "s": "#f2c29b", "H": "#3a2a1a", "b": "#4a3020", "m": "#c0392b", "T": "#1a1a1c", "P": "#ff00ff", "r": "#ff3b3b", "w": "#ecebe6", "G": "#0b0b0c", "bg": "#3e340b"}, "tomas": {"C": "#46464c", "K": "#0b0b0c", "s": "#e8b48a", "H": "#3a2a1a", "b": "#8a5a2b", "m": "#c0392b", "T": "#1a1a1c", "P": "#ff00ff", "r": "#ff3b3b", "w": "#ecebe6", "G": "#0b0b0c", "bg": "#173e0b"}};
+    [].slice.call(document.querySelectorAll('canvas.pxav')).forEach(function(c){
+      var k=c.dataset.av, m=AV[k], P=AVP[k], x=c.getContext('2d'); x.fillStyle=P.bg; x.fillRect(0,0,15,20);
+      m.forEach(function(r,y){for(var i=0;i<r.length;i++){var ch=r[i];if(ch!=='.'){x.fillStyle=P[ch];x.fillRect(i,y,1,1);}}});
+    });
+    function shatter(fig){
+      var ph=fig.querySelector('.member__ph'), img=ph.querySelector('img'), W=ph.clientWidth, H=ph.clientHeight, cols=6, rows=8, cw=W/cols, rh=H/rows;
+      var src=img.currentSrc||img.src, pieces=[];
+      for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){
+        var d=document.createElement('div'); d.className='shard';
+        d.style.cssText+='left:'+(c*cw)+'px;top:'+(r*rh)+'px;width:'+Math.ceil(cw)+'px;height:'+Math.ceil(rh)+'px;background-image:url('+src+');background-size:'+W+'px '+H+'px;background-position:-'+(c*cw)+'px -'+(r*rh)+'px';
+        ph.appendChild(d); pieces.push(d);
+      }
+      fig.classList.add('av');
+      requestAnimationFrame(function(){requestAnimationFrame(function(){
+        pieces.forEach(function(d,i){var dx=(Math.random()-.5)*260, dy=120+Math.random()*260, rot=(Math.random()-.5)*540;
+          d.style.transitionDelay=(Math.random()*.15)+'s'; d.style.transform='translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(.4)'; d.style.opacity='0';});
+      });});
+      setTimeout(function(){pieces.forEach(function(d){d.remove()})},1300);
+    }
+    function restore(fig){fig.classList.remove('av');}
+    [].slice.call(document.querySelectorAll('.member[data-inst]')).forEach(function(fig){
+      var cnt=0,last=0,tap=document.createElement('span');tap.className='tap';fig.querySelector('figcaption').appendChild(tap);
+      function hit(){var now=Date.now(); cnt=(now-last<1500)?cnt+1:1; last=now;
+        if(cnt>=3){cnt=0; tap.textContent=''; if(fig.classList.contains('av'))restore(fig); else shatter(fig);}
+        else tap.textContent=fig.classList.contains('av')?('●'.repeat(cnt)+'○'.repeat(3-cnt)+' zpět na fotku'):('●'.repeat(cnt)+'○'.repeat(3-cnt));
+        clearTimeout(fig._tt); fig._tt=setTimeout(function(){tap.textContent='';cnt=0;},1600);}
+      fig.addEventListener('click',hit);
+      fig.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' ')hit();});
+    });
   })();
 
   /* ---- heading hover scramble ---- */
