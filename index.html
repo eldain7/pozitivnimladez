@@ -299,6 +299,7 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
 /* ---------- mobile ---------- */
 @media (max-width:900px){
   :root{--nav-w:0px}
+  .slide{background-position:var(--mpos,center)}
   .nav{width:100%;bottom:auto;height:auto;padding:16px 20px;flex-direction:column;background:linear-gradient(180deg,rgba(11,11,12,.85),transparent)}
   .nav__brand{font-family:var(--display);font-size:18px;letter-spacing:.04em;text-transform:uppercase}
   .nav ul,.nav__foot{display:none}
@@ -354,14 +355,14 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
 <!-- ============ HERO ============ -->
 <header class="hero" id="home">
   <div class="hero__bg" id="heroBg">
-    <div class="slide is-on" style="background-image:url(img/hero-1.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-2.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-3.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-4.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-5.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-6.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-7.jpg)"></div>
-    <div class="slide" style="background-image:url(img/hero-8.jpg)"></div>
+    <div class="slide is-on" style="background-image:url(img/hero-1.jpg);--mpos:73% 50%"></div>
+    <div class="slide" style="background-image:url(img/hero-2.jpg);--mpos:64% 55%"></div>
+    <div class="slide" style="background-image:url(img/hero-3.jpg);--mpos:10% 30%"></div>
+    <div class="slide" style="background-image:url(img/hero-4.jpg);--mpos:36% 30%"></div>
+    <div class="slide" style="background-image:url(img/hero-5.jpg);--mpos:43% 20%"></div>
+    <div class="slide" style="background-image:url(img/hero-6.jpg);--mpos:0% 20%"></div>
+    <div class="slide" style="background-image:url(img/hero-7.jpg);--mpos:49% 30%"></div>
+    <div class="slide" style="background-image:url(img/hero-8.jpg);--mpos:66% 50%"></div>
   </div>
   <div class="hero__tex tex-duo"></div>
   <div class="hero__tex tex-noise"></div>
