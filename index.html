@@ -155,7 +155,10 @@ section.block .glb:hover .arr{color:#000;transform:translate(5px,5px)}
 .cover img{position:absolute;inset:18%;width:64%;filter:invert(1)}
 .music p{color:var(--dim);max-width:46ch;margin-bottom:28px}
 .platforms{display:flex;flex-wrap:wrap;gap:10px}
-.music{align-items:start;grid-template-columns:1fr;max-width:820px}
+.music{align-items:start;grid-template-columns:minmax(0,1fr);max-width:820px}
+.music>*,.about>*,.crew>*,.contact-grid>*{min-width:0}
+html,body{overflow-x:clip}
+.mailbig{overflow-wrap:anywhere}
 /* player */
 .player{border:1px solid var(--line);padding:22px;margin-bottom:28px;background:rgba(255,255,255,.015);position:relative}
 .player__top{display:flex;align-items:center;gap:16px}
