@@ -296,6 +296,29 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
 @keyframes ctaPulse{to{box-shadow:0 0 0 6px rgba(255,0,255,.25)}}
 .bg-cta__s{margin-top:10px;font-size:12px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
 
+
+/* jack minigame */
+.jackgame{margin-bottom:22px;border:1px solid var(--line);padding:16px 18px 10px;background:rgba(255,255,255,.015)}
+.jg-stage{position:relative;height:150px;overflow:hidden;touch-action:none}
+.jg-stage::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:3px;background:repeating-linear-gradient(90deg,#8b8a86 0 6px,transparent 6px 9px)}
+.jg-cable{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;pointer-events:none}
+.jg-guitar{position:absolute;left:14px;bottom:9px;image-rendering:pixelated;animation:none!important;transform:none!important;filter:none!important}
+.jg-amp{position:absolute;right:14px;bottom:9px;width:96px;height:76px;image-rendering:pixelated}
+.jackgame.on .jg-amp{animation:ampbuzz .12s steps(2) infinite}
+@keyframes ampbuzz{50%{transform:translate(1px,-1px)}}
+.jg-plug{position:absolute;left:0;top:0;width:30px;height:9px;image-rendering:pixelated;cursor:grab;z-index:3;outline:none}
+.jg-plug:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+.jg-plug.drag{cursor:grabbing}
+.jackgame:not(.on) .jg-plug{animation:plugwiggle 1.2s steps(2) infinite}
+@keyframes plugwiggle{50%{filter:drop-shadow(0 0 4px var(--accent))}}
+.jg-in{position:absolute;right:66px;bottom:82px;font-size:12px;letter-spacing:.15em;color:var(--accent)}
+.jackgame.on .jg-in{display:none}
+.jg-msg{position:absolute;right:20px;top:4px;font-family:var(--display);font-size:30px;color:var(--accent);opacity:0;pointer-events:none}
+.jackgame.on .jg-msg{animation:burp 1.4s steps(6) forwards}
+.player.locked{pointer-events:none}
+.player.locked>*{opacity:.25;filter:grayscale(1)}
+.player.locked::after{content:"⏚ NEJDŘÍV ZAPOJ KABEL ⏚";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-family:var(--display);font-size:clamp(24px,4vw,40px);color:var(--accent);letter-spacing:.04em}
+
 /* reveal */
 .rv{opacity:0;transform:translateY(40px);transition:opacity .9s ease,transform .9s ease}
 .rv.in{opacity:1;transform:none}
@@ -406,7 +429,18 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
   <div class="music">
     <div class="rv">
       <p>Čerstvé demo skladby přímo ze zkušebny. Pusť si je nahlas.</p>
-      <div class="player" id="player">
+      <div class="jackgame rv" id="jackgame">
+        <div class="bg-head"><span class="bg-tag">PM_ZAPOJ.EXE</span><span class="bg-hint">Přetáhni jack do vstupu komba — pak se přehrávač rozjede</span></div>
+        <div class="jg-stage" id="jgStage">
+          <canvas class="jg-cable" id="jgCable"></canvas>
+          <canvas class="jg-guitar" id="jgGuitar" data-sprite="guitar" data-scale="3" aria-hidden="true"></canvas>
+          <canvas class="jg-amp" id="jgAmp" aria-hidden="true"></canvas>
+          <canvas class="jg-plug" id="jgPlug" tabindex="0" role="button" aria-label="Jack kabel – přetáhni ho do vstupu komba, nebo stiskni Enter"></canvas>
+          <div class="jg-msg" id="jgMsg">BZZZ!</div>
+          <div class="jg-in">INPUT ↓</div>
+        </div>
+      </div>
+      <div class="player locked" id="player">
         <div class="player__top">
           <button class="pbtn" id="pPlay" aria-label="Přehrát">
             <svg viewBox="0 0 24 24" class="i-play"><path d="M7 4l13 8-13 8z"/></svg>
@@ -699,6 +733,50 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
     window.addEventListener('resize',function(){layout();pos=Math.min(pos,goal());render();});
   })();
 
+  /* ---- jack minigame: plug the cable into the amp to unlock the player ---- */
+  (function(){
+    var game=document.getElementById('jackgame'); if(!game)return;
+    var stage=document.getElementById('jgStage'), cab=document.getElementById('jgCable'), amp=document.getElementById('jgAmp'), plug=document.getElementById('jgPlug'), gtr=document.getElementById('jgGuitar');
+    var AMP=["KKKKKKKKKKKKKKKKKKKKKKKK", "KwwwwwwwwwwwwwwwwwwwwwwK", "KwSSwKwKwKwKwKwwwwwwLwwK", "KwSSwwwwwwwwwwwwwwwwwwwK", "KwwwwwwwwwwwwwwwwwwwwwwK", "KKKKKKKKKKKKKKKKKKKKKKKK", "KgKgKgKgKgKgKgKgKgKgKgKK", "KKgKgKgKgKgKgKgKgKgKgKgK", "KgKgKgKgKgKgKgKgKgKgKgKK", "KKgKgKgKpppppgKgKgKgKgKK", "KgKgKgKgpKpKpKgKgKgKgKgK", "KKgKgKgKpppppgKgKgKgKgKK", "KgKgKgKgpKgKgKgKgKgKgKgK", "KKgKgKgKpKgKgKgKgKgKgKgK", "KgKgKgKgKgKgKgKgKgKgKgKK", "KKgKgKgKgKgKgKgKgKgKgKgK", "KgKgKgKgKgKgKgKgKgKgKgKK", "KKKKKKKKKKKKKKKKKKKKKKKK", ".KK..................KK."], PLUG=["KKKKKKggg.", "KKKKKKgggY", "KKKKKKggg."];
+    var P={K:'#0b0b0c',w:'#ecebe6',g:'#9a9a9e',S:'#c9c9cc',L:'#5a1010',p:'#ff00ff',Y:'#ffd23a'};
+    function paint(c,m,pal){c.width=m[0].length;c.height=m.length;var x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);m.forEach(function(r,y){for(var i=0;i<r.length;i++){var ch=r[i];if(ch!=='.'){x.fillStyle=(pal||P)[ch];x.fillRect(i,y,1,1);}}});}
+    var ASC=4, PSC=3;
+    function drawAmp(on){var pal=Object.assign({},P);if(on)pal.L='#ff3b3b';paint(amp,AMP,pal);}
+    drawAmp(false); paint(plug,PLUG);
+    var plugged=false, px=0, py=0, drag=null;
+    function W(){return stage.clientWidth} function H(){return stage.clientHeight}
+    function socket(){ /* socket pixel (2..3,2..3) in amp sprite */
+      return {x:W()-14-96+2.5*ASC, y:H()-9-76+2.5*ASC}; }
+    function outJack(){ /* guitar output: bottom-right of body, sprite px (13,27) */
+      return {x:14+13*3, y:H()-9-31*3+27*3}; }
+    function home(){var o=outJack();px=o.x+70;py=H()-24;}
+    function place(){plug.style.transform='translate('+px+'px,'+py+'px)';drawCable();}
+    function drawCable(){
+      var sc=3,w=Math.ceil(W()/sc),h=Math.ceil(H()/sc); if(cab.width!==w)cab.width=w; if(cab.height!==h)cab.height=h;
+      var x=cab.getContext('2d');x.clearRect(0,0,w,h);
+      var a=outJack(), b={x:px, y:py+4.5};
+      var mx=(a.x+b.x)/2, dist=Math.hypot(b.x-a.x,b.y-a.y), my=Math.max(a.y,b.y)+Math.min(60,dist*.35);
+      my=Math.min(my,H()-12);
+      var steps=Math.max(20,Math.ceil(dist/2));
+      for(var t=0;t<=steps;t++){var u=t/steps, qx=(1-u)*(1-u)*a.x+2*(1-u)*u*mx+u*u*b.x, qy=(1-u)*(1-u)*a.y+2*(1-u)*u*my+u*u*b.y;
+        x.fillStyle='#55555a';x.fillRect(Math.round(qx/sc),Math.round(qy/sc),1,1);x.fillStyle='#86868c';x.fillRect(Math.round(qx/sc),Math.round(qy/sc)-1,1,1);}
+    }
+    function plugIn(){
+      var s=socket(); px=s.x-10*PSC+1; py=s.y-4.5; place(); plugged=true;
+      drawAmp(true); game.classList.remove('on'); void game.offsetWidth; game.classList.add('on');
+      if(window.__pmUnlock)window.__pmUnlock(true);
+    }
+    function unplug(){ if(!plugged)return; plugged=false; drawAmp(false); game.classList.remove('on'); if(window.__pmLock)window.__pmLock(); }
+    function near(){var s=socket();var tipx=px+10*PSC, tipy=py+4.5;return Math.hypot(tipx-s.x,tipy-s.y)<26;}
+    plug.addEventListener('pointerdown',function(e){e.preventDefault();unplug();drag={dx:e.clientX-px,dy:e.clientY-py};plug.classList.add('drag');try{plug.setPointerCapture(e.pointerId);}catch(_){}});
+    plug.addEventListener('pointermove',function(e){if(!drag)return;px=Math.max(0,Math.min(W()-30,e.clientX-drag.dx));py=Math.max(0,Math.min(H()-12,e.clientY-drag.dy));place();});
+    function drop(){if(!drag)return;drag=null;plug.classList.remove('drag');if(near())plugIn();}
+    plug.addEventListener('pointerup',drop);plug.addEventListener('pointercancel',drop);
+    plug.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();if(plugged){unplug();home();place();}else plugIn();}});
+    window.addEventListener('resize',function(){if(plugged){var s=socket();px=s.x-10*PSC+1;py=s.y-4.5;}else{px=Math.min(px,W()-30);}place();});
+    home();place();
+  })();
+
   /* ---- heading hover scramble ---- */
   [].slice.call(document.querySelectorAll('.glb')).forEach(function(box){
     var ws=[].slice.call(box.querySelectorAll('.w')), t;
@@ -739,6 +817,8 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
     tDur.textContent=items[cur].querySelector('.td').textContent; tCur.textContent='0:00'; fill.style.width='0'; var vEl=document.getElementById('van'); if(vEl)vEl.style.transform='translateX(0)'; if(window.__vanColor)window.__vanColor(cur);
   }
   function play(){var p=au.play(); if(p&&p.catch)p.catch(function(){player.classList.remove('playing')});}
+  window.__pmUnlock=function(auto){ player.classList.remove('locked'); if(auto&&au.paused)play(); };
+  window.__pmLock=function(){ player.classList.add('locked'); au.pause(); };
   load(0);
   document.getElementById('pPlay').addEventListener('click',function(){au.paused?play():au.pause();});
   document.getElementById('pPrev').addEventListener('click',function(){ if(au.currentTime>3){au.currentTime=0;return;} load(cur-1);play();});
