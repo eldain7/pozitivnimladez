@@ -155,6 +155,8 @@ section.block .glb:hover .arr,section.block .glb.hot .arr{color:#000;transform:t
 .cover img{position:absolute;inset:18%;width:64%;filter:invert(1)}
 .music p{color:var(--dim);max-width:46ch;margin-bottom:28px}
 .platforms{display:flex;flex-wrap:wrap;gap:10px}
+.btn-hot{background:var(--accent);border-color:var(--accent);color:#000}
+.btn-hot:hover{background:#2ee6e6;border-color:#2ee6e6;color:#000}
 .music{align-items:start;grid-template-columns:minmax(0,1fr);max-width:820px}
 .music>*,.about>*,.crew>*,.contact-grid>*{min-width:0}
 html,body{overflow-x:clip}
@@ -482,6 +484,7 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
         <audio id="pAudio" preload="metadata"></audio>
       </div>
       <div class="platforms">
+        <a href="#kontakt" class="btn btn-hot">Poptat kapelu ↘</a>
         <a href="#" class="btn">Bandzone</a>
       </div>
     </div>
