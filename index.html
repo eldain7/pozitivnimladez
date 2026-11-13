@@ -319,6 +319,13 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
 .player.locked>*{opacity:.25;filter:grayscale(1)}
 .player.locked::after{content:"⏚ NEJDŘÍV ZAPOJ KABEL ⏚";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;font-family:var(--display);font-size:clamp(24px,4vw,40px);color:var(--accent);letter-spacing:.04em}
 
+
+.shows.up-locked{position:relative}
+.shows.up-locked .show{filter:blur(7px) grayscale(1);opacity:.5;pointer-events:none;user-select:none}
+.shows.up-locked::after{content:"🔒 DOHRAJ MINIHRU A ODHAL DALŠÍ KONCERT";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-family:var(--display);font-size:clamp(20px,3vw,32px);color:var(--accent);letter-spacing:.04em}
+.shows#upcoming .show{transition:filter .6s steps(6),opacity .6s steps(6)}
+.beergame{margin:0 0 34px}
+
 /* reveal */
 .rv{opacity:0;transform:translateY(40px);transition:opacity .9s ease,transform .9s ease}
 .rv.in{opacity:1;transform:none}
@@ -479,15 +486,6 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
   <canvas class="pxd drums" data-sprite="drums" data-scale="3" aria-hidden="true"></canvas>
   <div class="kicker rv"><b>PM_03.ICS</b> <span>— Koncerty</span></div>
   <h2 class="rv gl"><span class="glb"><span class="w" data-clean="NAŽIVO">N4Ž<i></i>IVO</span> <span class="w o" data-clean="2027">2O27</span><span class="arr">↘</span></span></h2>
-  <div class="shows rv">
-    <div class="show">
-      <div class="d">13.08.<small>2027 · 20:00</small></div>
-      <div class="v">Areál Háječek — letní parket<small>Předskakujeme kapele Morčata na útěku</small></div>
-      <div class="c">Heřmaničky</div>
-      <span class="btn ghost" aria-disabled="true">Prodej brzy</span>
-    </div>
-  </div>
-
   <div class="beergame rv" id="beergame">
     <div class="bg-head"><span class="bg-tag">PM_MINIHRA.EXE</span><span class="bg-hint">Dostrkej tlouštíka k pivu a přeskoč zeleninu — ← → chůze, ↑ / mezerník skok (nebo tlačítka, tah myší a ťuknutí)</span></div>
     <div class="bg-arena" id="bgArena" tabindex="0" aria-label="Minihra: posuň postavičku k pivu">
@@ -506,6 +504,15 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
       <div class="bg-cta__t">Na zdraví! Vstupenky na Háječek 13.08.2027</div>
       <a href="#" class="btn bg-cta__b">Vstupenky ↗</a>
       <div class="bg-cta__s">Prodej zatím nezačal — odkaz sem dáme, jakmile odstartuje.</div>
+    </div>
+  </div>
+
+  <div class="shows rv up-locked" id="upcoming">
+    <div class="show">
+      <div class="d">13.08.<small>2027 · 20:00</small></div>
+      <div class="v">Areál Háječek — letní parket<small>Předskakujeme kapele Morčata na útěku</small></div>
+      <div class="c">Heřmaničky</div>
+      <span class="btn ghost" aria-disabled="true">Prodej brzy</span>
     </div>
   </div>
 
@@ -693,7 +700,7 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
       for(var i=0;i<veg.length;i++){var v=veg[i]; if(pos+36>v.x+3 && pos+6<v.x+v.w-3 && y<v.h-4){
         pos=Math.max(0,v.x-60); vy=0; y=0; hurt=.5; drag&&(drag={x:drag.cur,p:pos,cur:drag.cur}); say('FUJ!','#7dff3a'); render(); return;}}
     }
-    function check(){if(!won&&pos>=goal()-1&&y<4){won=true;dir=0;mc.style.visibility='hidden';drinking();say('BURP!','#ff00ff');game.classList.add('won');}}
+    function check(){if(!won&&pos>=goal()-1&&y<4){won=true;dir=0;mc.style.visibility='hidden';drinking();say('BURP!','#ff00ff');game.classList.add('won');var up=document.getElementById('upcoming');if(up)up.classList.remove('up-locked');}}
     function frame(ts){
       var dt=last?Math.min((ts-last)/1000,.05):0; last=ts;
       if(!won){
