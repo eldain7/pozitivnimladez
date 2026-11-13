@@ -159,6 +159,7 @@ section.block .glb:hover .arr{color:#000;transform:translate(5px,5px)}
 .music>*,.about>*,.crew>*,.contact-grid>*{min-width:0}
 html,body{overflow-x:clip}
 .mailbig{overflow-wrap:anywhere}
+h1,h2,h3,.big,.glb,.member strong,.player__title,.bg-cta__t{hyphens:none;-webkit-hyphens:none;word-break:normal;overflow-wrap:normal}
 /* player */
 .player{border:1px solid var(--line);padding:22px;margin-bottom:28px;background:rgba(255,255,255,.015);position:relative}
 .player__top{display:flex;align-items:center;gap:16px}
@@ -303,6 +304,13 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
 @media (max-width:900px){
   :root{--nav-w:0px}
   .slide{background-position:var(--mpos,center)}
+  .glb{font-size:clamp(34px,11.5vw,64px);padding:.16em 34px 6px 14px;margin-left:-14px;max-width:calc(100% + 14px)}
+  .glb .w{white-space:nowrap;display:inline-block}
+  .glb .arr{right:8px;bottom:10px;font-size:22px}
+  .glb i{width:.2em}
+  .hero__title h1{white-space:nowrap}
+  .player__title{font-size:24px}
+  .bg-cta__t{overflow-wrap:normal;word-break:normal}
   .nav{width:100%;bottom:auto;height:auto;padding:16px 20px;flex-direction:column;background:linear-gradient(180deg,rgba(11,11,12,.85),transparent)}
   .nav__brand{font-family:var(--display);font-size:18px;letter-spacing:.04em;text-transform:uppercase}
   .nav ul,.nav__foot{display:none}
@@ -366,6 +374,9 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
     <div class="slide" style="background-image:url(img/hero-6.jpg);--mpos:0% 20%"></div>
     <div class="slide" style="background-image:url(img/hero-7.jpg);--mpos:49% 30%"></div>
     <div class="slide" style="background-image:url(img/hero-8.jpg);--mpos:66% 50%"></div>
+    <div class="slide m-only" style="background-image:url(img/hero-m1.jpg);--mpos:27% 30%"></div>
+    <div class="slide m-only" style="background-image:url(img/hero-m2.jpg);--mpos:55% 25%"></div>
+    <div class="slide m-only" style="background-image:url(img/hero-m3.jpg);--mpos:61% 30%"></div>
   </div>
   <div class="hero__tex tex-duo"></div>
   <div class="hero__tex tex-noise"></div>
@@ -541,22 +552,26 @@ footer{align-items:flex-end;padding:40px 60px 40px calc(var(--nav-w) + 40px);bor
 
 <script>
 (function(){
-  /* ---- hero slideshow, 5 s ---- */
-  var slides=[].slice.call(document.querySelectorAll('.slide'));
-  var dotsEl=document.getElementById('dots'), i=0, timer;
-  slides.forEach(function(_,n){
-    var b=document.createElement('button'); b.setAttribute('aria-label','Fotka '+(n+1));
-    b.addEventListener('click',function(){go(n)}); dotsEl.appendChild(b);
-  });
-  var dots=[].slice.call(dotsEl.children);
+  /* ---- hero slideshow, 5 s (extra portrait photos on mobile) ---- */
+  var allSlides=[].slice.call(document.querySelectorAll('.slide')), slides=[], dots=[];
+  var dotsEl=document.getElementById('dots'), i=0, timer, mqM=window.matchMedia('(max-width:900px)');
   function go(n){
-    slides[i].classList.remove('is-on'); dots[i].classList.remove('is-on');
+    if(!slides.length)return;
+    if(slides[i])slides[i].classList.remove('is-on'); if(dots[i])dots[i].classList.remove('is-on');
     i=(n+slides.length)%slides.length;
     slides[i].classList.add('is-on');
     void dots[i].offsetWidth; dots[i].classList.add('is-on');
     clearTimeout(timer); timer=setTimeout(function(){go(i+1)},5000);
   }
-  go(0);
+  function buildSlides(){
+    allSlides.forEach(function(s){s.classList.remove('is-on')});
+    slides=allSlides.filter(function(s){return mqM.matches||!s.classList.contains('m-only')});
+    dotsEl.innerHTML='';
+    dots=slides.map(function(_,n){var b=document.createElement('button');b.setAttribute('aria-label','Fotka '+(n+1));b.addEventListener('click',function(){go(n)});dotsEl.appendChild(b);return b;});
+    i=0; go(0);
+  }
+  buildSlides();
+  if(mqM.addEventListener)mqM.addEventListener('change',buildSlides);else if(mqM.addListener)mqM.addListener(buildSlides);
 
   /* ---- parallax: hero bg slower, logo on its own layer ---- */
   var bg=document.getElementById('heroBg'), logo=document.getElementById('heroLogo'), title=document.getElementById('heroTitle');
