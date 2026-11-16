@@ -1,0 +1,37 @@
+{
+  "version": 0,
+  "updatedAt": null,
+  "updatedBy": null,
+  "concerts": [
+    {"id": "c-2027-08-13", "date": "2027-08-13", "time": "20:00", "venue": "Areál Háječek — letní parket", "note": "Předskakujeme kapele Morčata na útěku", "city": "Heřmaničky", "tickets": "", "soldOut": false},
+    {"id": "c-2026-11-07", "date": "2026-11-07", "time": "", "venue": "Vlna Štvanice", "note": "Koncert na Vlně", "city": "Praha", "tickets": "", "soldOut": false},
+    {"id": "c-2026-07-15", "date": "2026-07-15", "time": "", "venue": "Areál Háječek — letní parket", "note": "Předskokani kapely Morčata na útěku", "city": "Heřmaničky", "tickets": "", "soldOut": false}
+  ],
+  "tracks": [
+    {"id": "t1", "title": "Ráno rány spočítá", "src": "audio/rano-rany-spocita.mp3", "duration": 196},
+    {"id": "t2", "title": "Knedlík", "src": "audio/knedlik.mp3", "duration": 227},
+    {"id": "t3", "title": "Ve stínech", "src": "audio/ve-stinech.mp3", "duration": 194},
+    {"id": "t4", "title": "Pure Poppunk", "src": "audio/pure-poppunk.mp3", "duration": 207},
+    {"id": "t5", "title": "Na podlaze", "src": "audio/na-podlaze.mp3", "duration": 118},
+    {"id": "t6", "title": "Nechal jsem si vytetovat", "src": "audio/nechal-jsem-si-vytetovat.mp3", "duration": 306},
+    {"id": "t7", "title": "Minulost", "src": "audio/minulost.mp3", "duration": 202}
+  ],
+  "hero": [
+    {"id": "h1", "src": "img/hero-1.jpg", "mpos": "73% 50%", "mobileOnly": false},
+    {"id": "h2", "src": "img/hero-2.jpg", "mpos": "64% 55%", "mobileOnly": false},
+    {"id": "h3", "src": "img/hero-3.jpg", "mpos": "10% 30%", "mobileOnly": false},
+    {"id": "h4", "src": "img/hero-4.jpg", "mpos": "36% 30%", "mobileOnly": false},
+    {"id": "h5", "src": "img/hero-5.jpg", "mpos": "43% 20%", "mobileOnly": false},
+    {"id": "h6", "src": "img/hero-6.jpg", "mpos": "0% 20%", "mobileOnly": false},
+    {"id": "h7", "src": "img/hero-7.jpg", "mpos": "49% 30%", "mobileOnly": false},
+    {"id": "h8", "src": "img/hero-8.jpg", "mpos": "66% 50%", "mobileOnly": false},
+    {"id": "h9", "src": "img/hero-m1.jpg", "mpos": "27% 30%", "mobileOnly": true},
+    {"id": "h10", "src": "img/hero-m2.jpg", "mpos": "55% 25%", "mobileOnly": true},
+    {"id": "h11", "src": "img/hero-m3.jpg", "mpos": "61% 30%", "mobileOnly": true}
+  ],
+  "gallery": [
+    {"id": "g1", "src": "img/hero-3.jpg", "alt": "Baskytarista při koncertě"},
+    {"id": "g2", "src": "img/hero-6.jpg", "alt": "Bubeník při koncertě"},
+    {"id": "g3", "src": "img/hero-2.jpg", "alt": "Zpěvák s kytarou"}
+  ]
+}
