@@ -17,7 +17,7 @@ async function readExact() {
     const r = await fetch(`${h.url}?v=${new Date(h.uploadedAt).getTime()}`, { cache: 'no-store' });
     return r.ok ? await r.json() : null;
   } catch (e) {
-    if (e && (e.name === 'BlobNotFoundError' || /not.?found/i.test(String(e.message)))) return null;
+    if (e && (e.name === 'BlobNotFoundError' || (e.constructor && e.constructor.name === 'BlobNotFoundError') || /not.?found|does not exist/i.test(String(e.message)))) return null;
     throw e;
   }
 }
